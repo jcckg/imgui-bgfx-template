@@ -6,7 +6,6 @@
 struct UIState {
     UpdateState updateState;
     UpdateChecker updateChecker;
-    bool apiServerEnabled = false;
 };
 
 #endif

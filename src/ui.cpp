@@ -9,13 +9,6 @@ void initialiseApp(UIState& state) {
         state.updateChecker.checkForUpdates("${AUTHOR}", "${EXECUTABLE_NAME}");
         state.updateState.hasCheckedThisSession = true;
     }
-    
-#ifdef ENABLE_API_SERVER
-    auto& api = Synesthesia::SynesthesiaAPIIntegration::getInstance();
-    if (api.isServerRunning() && !state.apiServerEnabled) {
-        api.stopServer();
-    }
-#endif
 }
 
 void updateUI(float* clear_color, ImGuiIO& io, UIState& state) {
