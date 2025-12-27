@@ -92,7 +92,7 @@ if(APPLE)
         ${QUARTZCORE_FRAMEWORK}
         ${GLFW_TARGET}
         ${PORTAUDIO_TARGET}
-        nlohmann_json::nlohmann_json
+
         vendor_imgui
         vendor_imgui_backends
         m
@@ -102,7 +102,7 @@ elseif(WIN32)
         ${GLFW_TARGET}
         ${PORTAUDIO_TARGET}
         ${DX12_LIBS}
-        nlohmann_json::nlohmann_json
+
         vendor_imgui
         windowsapp
     )
@@ -112,7 +112,7 @@ else()
         ${PORTAUDIO_TARGET}
         Vulkan::Vulkan
         ${ALSA_LIBRARIES}
-        nlohmann_json::nlohmann_json
+
         vendor_imgui
         vendor_imgui_backends
         dl

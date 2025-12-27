@@ -14,14 +14,14 @@ set(AUTHOR_HANDLE "AuthorHandle")
 
 project(App VERSION ${APP_VERSION})
 
-set(APP_NAME "Example Application")
+set(APP_NAME "ExampleApplication")
 set(EXECUTABLE_NAME "${APP_NAME}")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui")
-set(JSON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/json")
+
 set(GLFW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw")
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 

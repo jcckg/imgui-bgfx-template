@@ -12,8 +12,3 @@ if(EXISTS "${GLFW_DIR}/CMakeLists.txt")
     add_vendor_subdirectory(${GLFW_DIR} glfw)
     set(GLFW_TARGET glfw)
 endif()
-
-if(EXISTS "${JSON_DIR}/CMakeLists.txt")
-    message(STATUS "Using vendor nlohmann_json from ${JSON_DIR}")
-    add_vendor_subdirectory(${JSON_DIR} json)
-endif()
