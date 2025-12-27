@@ -1,5 +1,5 @@
 set(SOURCES
-    ${SRC_DIR}/updates/update.cpp
+
     ${SRC_DIR}/ui/styling/styling.cpp
     ${SRC_DIR}/ui.cpp
 )

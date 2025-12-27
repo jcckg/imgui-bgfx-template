@@ -9,7 +9,7 @@
     <key>CFBundleIconFile</key>
     <string>app.icns</string>
     <key>CFBundleIdentifier</key>
-    <string>com.jcckg.${EXECUTABLE_NAME}</string>
+    <string>com.${AUTHOR_HANDLE}.${EXECUTABLE_NAME}</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
@@ -21,7 +21,7 @@
     <key>CFBundleVersion</key>
     <string>${APP_VERSION}</string>
     <key>NSHumanReadableCopyright</key>
-    <string>Copyright © ${YEAR} Jack Gannon | ${LICENSE}</string>
+    <string>Copyright © ${YEAR} ${AUTHOR_NAME} | ${LICENSE}</string>
     <key>LSMinimumSystemVersion</key>
     <string>10.15</string>
     <key>NSHighResolutionCapable</key>

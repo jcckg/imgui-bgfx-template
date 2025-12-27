@@ -3,13 +3,15 @@ if(WIN32)
         ${CMAKE_BINARY_DIR}/app.ico COPYONLY)
     configure_file(${SRC_DIR}/backend/win32/resource.h
         ${CMAKE_BINARY_DIR}/resource.h COPYONLY)
+    configure_file(${SRC_DIR}/backend/win32/app.rc.in
+        ${CMAKE_BINARY_DIR}/app.rc @ONLY)
 endif()
 
 if(WIN32)
     message(STATUS "Configuring for Windows (DirectX 12)")
     list(APPEND SOURCES
         ${SRC_DIR}/backend/win32/main.cpp
-        ${SRC_DIR}/backend/win32/app.rc
+        ${CMAKE_BINARY_DIR}/app.rc
         ${SRC_DIR}/ui/styling/system_theme/system_theme_detector.cpp
     )
     set(DX12_LIBS d3d12 dxgi d3dcompiler)
@@ -123,12 +125,12 @@ if(APPLE AND BUILD_MACOS_BUNDLE)
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_BINARY_DIR}/Info.plist"
         MACOSX_BUNDLE_ICON_FILE "app.icns"
-        MACOSX_BUNDLE_BUNDLE_NAME "${EXECUTABLE_NAME}"
+        MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}"
         MACOSX_BUNDLE_BUNDLE_VERSION "${APP_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${APP_VERSION}"
-        MACOSX_BUNDLE_LONG_VERSION_STRING "${EXECUTABLE_NAME} ${APP_VERSION}"
-        MACOSX_BUNDLE_COPYRIGHT "Copyright © ${CURRENT_YEAR} Jack Gannon | MIT License"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "com.jackgannon.${CURRENT_YEAR}"
+        MACOSX_BUNDLE_LONG_VERSION_STRING "${APP_NAME} ${APP_VERSION}"
+        MACOSX_BUNDLE_COPYRIGHT "Copyright © ${CURRENT_YEAR} ${AUTHOR_NAME} | MIT License"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.${AUTHOR_HANDLE}.${APP_NAME}"
         MACOSX_BUNDLE_EXECUTABLE_NAME "${EXECUTABLE_NAME}"
         RESOURCE "${ICON_SRC}"
     )

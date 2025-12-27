@@ -342,7 +342,7 @@ int main(int, char**)
     // Create window with Vulkan context
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor()); // Valid on GLFW 3.3+ only
-    GLFWwindow* window = glfwCreateWindow((int)(1280 * main_scale), (int)(800 * main_scale), "Dear ImGui GLFW+Vulkan example", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow((int)(1280 * main_scale), (int)(800 * main_scale), APP_TITLE_STRING, nullptr, nullptr);
     if (!glfwVulkanSupported())
     {
         printf("GLFW: Vulkan Not Supported\n");
@@ -405,7 +405,7 @@ int main(int, char**)
 
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    UIState uiState;
+
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -434,7 +434,8 @@ int main(int, char**)
         ImGui::NewFrame();
 
         // Display our UI
-        updateUI((float*)&clear_color, io, uiState);
+        updateUI((float*)&clear_color, io);
+
 
         // Rendering
         ImGui::Render();
