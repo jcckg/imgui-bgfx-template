@@ -21,8 +21,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui")
-
 set(GLFW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw")
+set(BX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/bx")
+set(BIMG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/bimg")
+set(BGFX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/bgfx")
+set(BGFX_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/bgfx.cmake")
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 option(BUILD_MACOS_BUNDLE "Build as macOS .app bundle" OFF)

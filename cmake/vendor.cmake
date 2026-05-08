@@ -36,44 +36,15 @@ add_vendor_library(
         ${IMGUI_DIR}/backends
 )
 
-if(WIN32)
-    add_vendor_library(
-        TARGET vendor_imgui_backends
-        SOURCES
-            ${IMGUI_DIR}/backends/imgui_impl_dx12.cpp
-            ${IMGUI_DIR}/backends/imgui_impl_win32.cpp
-        INCLUDE_DIRS
-            ${IMGUI_DIR}
-            ${IMGUI_DIR}/backends
-    )
-elseif(APPLE)
-    add_vendor_library(
-        TARGET vendor_imgui_backends
-        SOURCES
-            ${IMGUI_DIR}/backends/imgui_impl_metal.mm
-            ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-        INCLUDE_DIRS
-            ${IMGUI_DIR}
-            ${IMGUI_DIR}/backends
-            ${GLFW_DIR}/include
-    )
-
-    set_source_files_properties(
-        ${IMGUI_DIR}/backends/imgui_impl_metal.mm
-        PROPERTIES COMPILE_FLAGS "-ObjC++ -fobjc-arc -fobjc-weak -w"
-    )
-else()
-    add_vendor_library(
-        TARGET vendor_imgui_backends
-        SOURCES
-            ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
-            ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-        INCLUDE_DIRS
-            ${IMGUI_DIR}
-            ${IMGUI_DIR}/backends
-            ${GLFW_DIR}/include
-    )
-endif()
+add_vendor_library(
+    TARGET vendor_imgui_backends
+    SOURCES
+        ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+    INCLUDE_DIRS
+        ${IMGUI_DIR}
+        ${IMGUI_DIR}/backends
+        ${GLFW_DIR}/include
+)
 
 function(add_vendor_subdirectory directory target_name)
     if(CMAKE_CXX_FLAGS)

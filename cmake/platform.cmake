@@ -1,31 +1,26 @@
 if(WIN32)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/assets/icon/app.ico
-        ${CMAKE_BINARY_DIR}/app.ico COPYONLY)
-    configure_file(${SRC_DIR}/backend/win32/resource.h
-        ${CMAKE_BINARY_DIR}/resource.h COPYONLY)
-    configure_file(${SRC_DIR}/backend/win32/app.rc.in
-        ${CMAKE_BINARY_DIR}/app.rc @ONLY)
-endif()
-
-if(WIN32)
-    message(STATUS "Configuring for Windows (DirectX 12)")
+    message(STATUS "Configuring for Windows (BGFX: Direct3D 12/11)")
     list(APPEND SOURCES
-        ${SRC_DIR}/backend/win32/main.cpp
-        ${CMAKE_BINARY_DIR}/app.rc
+        ${SRC_DIR}/backend/bgfx/main.cpp
+        ${SRC_DIR}/backend/bgfx/imgui_impl_bgfx.cpp
+        ${SRC_DIR}/backend/bgfx/disabled_renderers.cpp
         ${SRC_DIR}/ui/styling/system_theme/system_theme_detector.cpp
     )
-    set(DX12_LIBS d3d12 dxgi d3dcompiler)
 elseif(APPLE)
-    message(STATUS "Configuring for macOS (Metal)")
+    message(STATUS "Configuring for macOS (BGFX: Metal)")
     list(APPEND SOURCES
-        ${SRC_DIR}/backend/darwin/main.mm
+        ${SRC_DIR}/backend/bgfx/main.cpp
+        ${SRC_DIR}/backend/bgfx/imgui_impl_bgfx.cpp
+        ${SRC_DIR}/backend/bgfx/disabled_renderers.cpp
         ${SRC_DIR}/ui/styling/system_theme/system_theme_detector.mm
     )
     set(OBJC_FLAGS "-ObjC++ -fobjc-arc -fobjc-weak")
 else()
-    message(STATUS "Configuring for Linux (Vulkan)")
+    message(STATUS "Configuring for Linux (BGFX: Vulkan)")
     list(APPEND SOURCES
-        ${SRC_DIR}/backend/linux/main.cpp
+        ${SRC_DIR}/backend/bgfx/main.cpp
+        ${SRC_DIR}/backend/bgfx/imgui_impl_bgfx.cpp
+        ${SRC_DIR}/backend/bgfx/disabled_renderers.cpp
         ${SRC_DIR}/ui/styling/system_theme/system_theme_detector.cpp
     )
 endif()
@@ -41,6 +36,9 @@ elseif(APPLE)
 else()
     add_executable(${EXECUTABLE_NAME} ${SOURCES})
 endif()
+
+resolve_app_bgfx_config(app_bgfx_renderer_definitions)
+target_compile_definitions(${EXECUTABLE_NAME} PRIVATE ${app_bgfx_renderer_definitions})
 
 if(WIN32)
     target_compile_options(${EXECUTABLE_NAME} PRIVATE
@@ -63,11 +61,11 @@ elseif(APPLE)
         "-O3" "-ffast-math" "-march=native"
     )
 
-    set_source_files_properties(${SRC_DIR}/backend/darwin/main.mm PROPERTIES COMPILE_FLAGS "${OBJC_FLAGS}")
     set_source_files_properties(${SRC_DIR}/ui/styling/system_theme/system_theme_detector.mm PROPERTIES COMPILE_FLAGS "${OBJC_FLAGS}")
-    set_source_files_properties(${SRC_DIR}/updates/update.cpp PROPERTIES COMPILE_FLAGS "-Wno-nan-infinity-disabled")
 
     set_property(SOURCE ${SRC_DIR}/ui.cpp APPEND PROPERTY COMPILE_OPTIONS "-Wno-c99-extensions")
+    set_property(SOURCE ${SRC_DIR}/backend/bgfx/imgui_impl_bgfx.cpp APPEND PROPERTY COMPILE_OPTIONS
+        "-Wno-sign-conversion" "-Wno-implicit-float-conversion" "-Wno-double-promotion")
 else()
     target_compile_options(${EXECUTABLE_NAME} PRIVATE
         "-Wall" "-Wextra" "-Wformat" "-Wpedantic"
@@ -77,21 +75,19 @@ endif()
 
 if(APPLE)
     find_library(METAL_FRAMEWORK Metal REQUIRED)
-    find_library(METALKIT_FRAMEWORK MetalKit REQUIRED)
     find_library(COCOA_FRAMEWORK Cocoa REQUIRED)
     find_library(IOKIT_FRAMEWORK IOKit REQUIRED)
     find_library(COREVIDEO_FRAMEWORK CoreVideo REQUIRED)
-    find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)
 
     target_link_libraries(${EXECUTABLE_NAME} PRIVATE
         ${METAL_FRAMEWORK}
-        ${METALKIT_FRAMEWORK}
         ${COCOA_FRAMEWORK}
         ${IOKIT_FRAMEWORK}
         ${COREVIDEO_FRAMEWORK}
-        ${QUARTZCORE_FRAMEWORK}
+        bgfx
+        bimg
+        bx
         ${GLFW_TARGET}
-        ${PORTAUDIO_TARGET}
 
         vendor_imgui
         vendor_imgui_backends
@@ -99,19 +95,21 @@ if(APPLE)
     )
 elseif(WIN32)
     target_link_libraries(${EXECUTABLE_NAME} PRIVATE
+        bgfx
+        bimg
+        bx
         ${GLFW_TARGET}
-        ${PORTAUDIO_TARGET}
-        ${DX12_LIBS}
 
         vendor_imgui
+        vendor_imgui_backends
         windowsapp
     )
 else()
     target_link_libraries(${EXECUTABLE_NAME} PRIVATE
+        bgfx
+        bimg
+        bx
         ${GLFW_TARGET}
-        ${PORTAUDIO_TARGET}
-        Vulkan::Vulkan
-        ${ALSA_LIBRARIES}
 
         vendor_imgui
         vendor_imgui_backends

@@ -9,9 +9,12 @@ function(configure_include_directories)
         ${IMGUI_DIR}
         ${IMGUI_DIR}/backends
         ${SRC_DIR}
+        ${SRC_DIR}/backend/bgfx
         ${SRC_DIR}/ui/styling
         ${SRC_DIR}/ui/styling/system_theme
+        ${BGFX_DIR}/include
+        ${BX_DIR}/include
+        ${BIMG_DIR}/include
         ${CMAKE_BINARY_DIR}
-        /opt/homebrew/include
     )
 endfunction()
