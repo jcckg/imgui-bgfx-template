@@ -12,7 +12,6 @@
 #include <cstdlib>
 
 #include <bgfx/bgfx.h>
-#include <bgfx/platform.h>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -40,6 +39,11 @@ constexpr bgfx::ViewId kClearViewId = 0;
 constexpr bgfx::ViewId kImGuiViewId = 1;
 constexpr int kDefaultWindowWidth = 1280;
 constexpr int kDefaultWindowHeight = 800;
+#if defined(__APPLE__)
+constexpr uint32_t kSwapChainFlags = BGFX_SWAP_CHAIN_HIDPI;
+#else
+constexpr uint32_t kSwapChainFlags = BGFX_SWAP_CHAIN_NONE;
+#endif
 
 class BgfxCallback final : public bgfx::CallbackI {
 public:
@@ -98,26 +102,22 @@ void glfwErrorCallback(int error, const char* description) {
     std::fprintf(stderr, "GLFW Error %d: %s\n", error, description != nullptr ? description : "unknown");
 }
 
-bgfx::PlatformData platformData(GLFWwindow* window) {
-    bgfx::PlatformData data{};
-
+void configureWindowHandles(GLFWwindow* window, bgfx::Init& init) {
 #if defined(_WIN32)
-    data.nwh = glfwGetWin32Window(window);
+    init.swapChain.nwh = glfwGetWin32Window(window);
 #elif defined(__APPLE__)
-    data.nwh = glfwGetCocoaWindow(window);
+    init.swapChain.nwh = glfwGetCocoaWindow(window);
 #else
     if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
-        data.ndt = glfwGetWaylandDisplay();
-        data.nwh = glfwGetWaylandWindow(window);
-        data.type = bgfx::NativeWindowHandleType::Wayland;
+        init.swapChain.ndt = glfwGetWaylandDisplay();
+        init.swapChain.nwh = glfwGetWaylandWindow(window);
+        init.platformData.type = bgfx::NativeWindowHandleType::Wayland;
     } else {
-        data.ndt = glfwGetX11Display();
-        data.nwh = reinterpret_cast<void*>(static_cast<uintptr_t>(glfwGetX11Window(window)));
-        data.type = bgfx::NativeWindowHandleType::Default;
+        init.swapChain.ndt = glfwGetX11Display();
+        init.swapChain.nwh = reinterpret_cast<void*>(static_cast<uintptr_t>(glfwGetX11Window(window)));
+        init.platformData.type = bgfx::NativeWindowHandleType::Default;
     }
 #endif
-
-    return data;
 }
 
 bgfx::RendererType::Enum preferredRendererType() {
@@ -150,14 +150,11 @@ bool initialiseBgfx(GLFWwindow* window, uint32_t width, uint32_t height) {
         init.type = renderer;
         init.fallback = false;
         init.callback = &callback;
-        init.platformData = platformData(window);
-        init.resolution.width = std::max(width, 1u);
-        init.resolution.height = std::max(height, 1u);
-        init.resolution.reset = BGFX_RESET_VSYNC
-#if defined(__APPLE__)
-            | BGFX_RESET_HIDPI
-#endif
-            ;
+        configureWindowHandles(window, init);
+        init.swapChain.width = std::max(width, 1u);
+        init.swapChain.height = std::max(height, 1u);
+        init.swapChain.flags = kSwapChainFlags;
+        init.reset = BGFX_RESET_VSYNC;
 
         if (bgfx::init(init)) {
             return true;
@@ -239,14 +236,11 @@ int main(int, char**) {
         if (currentWidth != framebufferWidth || currentHeight != framebufferHeight) {
             framebufferWidth = currentWidth;
             framebufferHeight = currentHeight;
-            bgfx::reset(
-                static_cast<uint32_t>(std::max(framebufferWidth, 1)),
-                static_cast<uint32_t>(std::max(framebufferHeight, 1)),
-                BGFX_RESET_VSYNC
-#if defined(__APPLE__)
-                    | BGFX_RESET_HIDPI
-#endif
-            );
+            bgfx::SwapChain swapChain;
+            swapChain.width = static_cast<uint32_t>(std::max(framebufferWidth, 1));
+            swapChain.height = static_cast<uint32_t>(std::max(framebufferHeight, 1));
+            swapChain.flags = kSwapChainFlags;
+            bgfx::reset(BGFX_RESET_VSYNC, &swapChain);
         }
 
         ImGui_Implbgfx_NewFrame();
